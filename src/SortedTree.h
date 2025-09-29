@@ -8,26 +8,43 @@ public:
     SortedTree();
     ~SortedTree();
 
-    // disable copying for now
     SortedTree(const SortedTree&) = delete;
     SortedTree& operator=(const SortedTree&) = delete;
 
-    // Insert or replace value by key
     void put(const Key& key, const Value& value);
-
-    // Get value by key (std::nullopt if not found)
     std::optional<Value> get(const Key& key) const;
 
 private:
-    // filler: not implemented yet
-    mutable std::shared_mutex mtx_;
+    struct Node {
+        Node(const Key& k, const Value& v)
+            : key(k), value(v), left(nullptr), right(nullptr), height(1) {}
+        ~Node()=default;
+
+        Key key;
+        Value value;
+        Node* left;
+        Node* right;
+        int height;
+    };
+
+    Node* root;
+
+    void DeleteTree(Node* node);
 };
 
 template <typename Key, typename Value>
-SortedTree<Key, Value>::SortedTree() = default;
+SortedTree<Key, Value>::SortedTree() { root = nullptr; }
 
 template <typename Key, typename Value>
-SortedTree<Key, Value>::~SortedTree() = default;
+SortedTree<Key, Value>::~SortedTree() { DeleteTree(root); };
+
+template<typename Key, typename Value>
+void SortedTree<Key, Value>::DeleteTree(Node* node) {
+    if(node == nullptr) return;
+    DeleteTree(node->left);
+    DeleteTree(node->right);
+    delete node;
+}
 
 template <typename Key, typename Value>
 void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
