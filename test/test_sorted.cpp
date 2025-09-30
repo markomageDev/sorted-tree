@@ -9,26 +9,21 @@ using Bytes = std::vector<uint8_t>;
 void testBasicPutGet() {
     SortedTree<int, std::string> tree;
 
-    // Insert some nodes
     tree.put(4, "A");
     tree.put(2, "B");
     tree.put(6, "C");
     tree.put(1, "D");
     tree.put(3, "E");
 
-    // Basic checks
     assert(tree.get(4) == "A");
     assert(tree.get(3) == "E");
     assert(tree.get(6) == "C");
 
-    // Update existing key
     tree.put(4, "Change");
     assert(tree.get(4) == "Change");
 
-    // Missing key
     assert(tree.get(10) == std::nullopt);
 
-    // Edge cases
     SortedTree<int, std::string> emptyTree;
     assert(emptyTree.get(0) == std::nullopt);
 
@@ -38,56 +33,87 @@ void testBasicPutGet() {
 }
 
 void testAVLRotations() {
-    // LL case
     {
         SortedTree<int, int> tree;
         tree.put(30, 30);
         tree.put(20, 20);
-        tree.put(10, 10); // triggers LL -> single right rotation
+        tree.put(10, 10);
         assert(tree.get(30).has_value());
         assert(tree.get(20).has_value());
         assert(tree.get(10).has_value());
+        assert(tree.treeHeight() == 2);
     }
 
-    // RR case
     {
         SortedTree<int, int> tree;
         tree.put(10, 10);
         tree.put(20, 20);
-        tree.put(30, 30); // triggers RR -> single left rotation
+        tree.put(30, 30);
         assert(tree.get(10).has_value());
         assert(tree.get(20).has_value());
         assert(tree.get(30).has_value());
+        assert(tree.treeHeight() == 2);
     }
 
-    // LR case
     {
         SortedTree<int, int> tree;
         tree.put(30, 30);
         tree.put(10, 10);
-        tree.put(20, 20); // triggers LR -> left rotation + right rotation
+        tree.put(20, 20);
         assert(tree.get(10).has_value());
         assert(tree.get(20).has_value());
         assert(tree.get(30).has_value());
+        assert(tree.treeHeight() == 2);
     }
 
-    // RL case
     {
         SortedTree<int, int> tree;
         tree.put(10, 10);
         tree.put(30, 30);
-        tree.put(20, 20); // triggers RL -> right rotation + left rotation
+        tree.put(20, 20);
         assert(tree.get(10).has_value());
         assert(tree.get(20).has_value());
         assert(tree.get(30).has_value());
+        assert(tree.treeHeight() == 2);
+    }
+
+    {
+        SortedTree<int, int> tree;
+        for (int i = 1; i <= 7; ++i) {
+            tree.put(i, i);
+        }
+        assert(tree.treeHeight() == 3);
+    }
+}
+
+void testLargeInsertions() {
+    SortedTree<int, int> tree;
+
+    for (int i = 1; i <= 1000; ++i) {
+        tree.put(i, i);
+    }
+
+    for (int i = 1; i <= 1000; ++i) {
+        assert(tree.get(i).has_value());
+        assert(tree.get(i).value() == i);
+    }
+
+    assert(tree.treeHeight() <= 14);
+
+    for (int i = 1000; i >= 1; --i) {
+        tree.put(i, i * 2);
+    }
+
+    for (int i = 1; i <= 1000; ++i) {
+        assert(tree.get(i).value() == i * 2);
     }
 }
 
 void testDuplicateKeys() {
     SortedTree<int, std::string> tree;
     tree.put(1, "A");
-    tree.put(1, "B");  // update
-    tree.put(1, "C");  // update again
+    tree.put(1, "B");
+    tree.put(1, "C");
     assert(tree.get(1) == "C");
 }
 
@@ -95,6 +121,7 @@ int main() {
     testBasicPutGet();
     testAVLRotations();
     testDuplicateKeys();
+    testLargeInsertions();
 
     std::cout << "All assertions passed" << std::endl;
     return 0;

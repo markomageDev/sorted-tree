@@ -14,6 +14,9 @@ public:
     void put(const Key& key, const Value& value);
     std::optional<Value> get(const Key& key) const;
 
+    int treeHeight()const {
+        return height(root);
+    }
 private:
     struct Node {
         Node(const Key& k, const Value& v, Node* parent = nullptr)
@@ -41,6 +44,8 @@ private:
     void rightRotation(Node*& y);
 
     void leftRotation(Node*& y);
+
+    void updateHeight(Node*& n) { if (n) n->height = std::max(height(n->left), height(n->right)) + 1; }
 };
 
 template <typename Key, typename Value>
@@ -59,55 +64,57 @@ void SortedTree<Key, Value>::deleteTree(Node* node) {
 
 template<typename Key, typename Value>
 void SortedTree<Key,Value>::rightRotation(Node*& y) {
+    Node* oldY = y;      // keep original y
     Node* x = y->left;
     Node* middle = x->right;
 
-    x->right = y;
-    y->left = middle;
+    x->right = oldY;
+    oldY->left = middle;
 
-    x->parent = y->parent;
-    y->parent = x;
-    if (middle) middle->parent = y;
+    x->parent = oldY->parent;
+    oldY->parent = x;
+    if (middle) middle->parent = oldY;
 
     if (!x->parent)
         root = x;
-    else if (x->parent->left == y) {
+    else if (x->parent->left == oldY) {
         x->parent->left = x;
     }
     else {
         x->parent->right = x;
     }
 
-    y->height = std::max(height(y->left), height(y->right)) + 1;
-    x->height = std::max(height(x->left), height(x->right)) + 1;
+    // update heights
+    updateHeight(oldY);
+    updateHeight(x);
 
-    y = x;
+    y = x;  // reassign parent's pointer
 }
 
 template<typename Key, typename Value>
 void SortedTree<Key,Value>::leftRotation(Node*& y) {
+    Node* oldY = y;
     Node* x = y->right;
     Node* middle = x->left;
 
-    x->left = y;
-    y->right = middle;
+    x->left = oldY;
+    oldY->right = middle;
 
-    x->parent = y->parent;
-    y->parent = x;
+    x->parent = oldY->parent;
+    oldY->parent = x;
+    if (middle) middle->parent = oldY;
 
-    if(middle) middle->parent = y;
-
-    if(!x->parent)
+    if (!x->parent)
         root = x;
-    else if(x->parent->left == y) {
+    else if (x->parent->left == oldY) {
         x->parent->left = x;
     }
     else {
         x->parent->right = x;
     }
 
-    y->height = std::max(height(y->left), height(y->right)) + 1;
-    x->height = std::max(height(x->left), height(x->right)) + 1;
+    updateHeight(oldY);
+    updateHeight(x);
 
     y = x;
 }
@@ -142,10 +149,7 @@ void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
     }
 
     while(curr){
-        int leftHeight = height(curr->left);
-        int rightHeight = height(curr->right);
-
-        int balance = leftHeight - rightHeight;
+        int balance = height(curr->left) - height(curr->right);
 
         if(balance > 1) {
             int children_balance = height(curr->left->left) - height(curr->left->right);
@@ -166,7 +170,7 @@ void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
             }
         }
 
-        curr->height = std::max(leftHeight, rightHeight) + 1;
+        updateHeight(curr);
         curr = curr->parent;
     }
 }
