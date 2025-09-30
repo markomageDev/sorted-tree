@@ -37,17 +37,50 @@ void testBasicPutGet() {
     assert(singleNodeTree.get(42) == "Only");
 }
 
-void testLeftRightHeavyInsert() {
-    SortedTree<int, int> tree;
+void testAVLRotations() {
+    // LL case
+    {
+        SortedTree<int, int> tree;
+        tree.put(30, 30);
+        tree.put(20, 20);
+        tree.put(10, 10); // triggers LL -> single right rotation
+        assert(tree.get(30).has_value());
+        assert(tree.get(20).has_value());
+        assert(tree.get(10).has_value());
+    }
 
-    // Right-heavy insert (ascending order)
-    for (int i = 1; i <= 5; i++) tree.put(i, i*i);
-    for (int i = 1; i <= 5; i++) assert(tree.get(i) == i*i);
+    // RR case
+    {
+        SortedTree<int, int> tree;
+        tree.put(10, 10);
+        tree.put(20, 20);
+        tree.put(30, 30); // triggers RR -> single left rotation
+        assert(tree.get(10).has_value());
+        assert(tree.get(20).has_value());
+        assert(tree.get(30).has_value());
+    }
 
-    // Left-heavy insert (descending order)
-    SortedTree<int, int> tree2;
-    for (int i = 5; i >= 1; i--) tree2.put(i, i*i);
-    for (int i = 5; i >= 1; i--) assert(tree2.get(i) == i*i);
+    // LR case
+    {
+        SortedTree<int, int> tree;
+        tree.put(30, 30);
+        tree.put(10, 10);
+        tree.put(20, 20); // triggers LR -> left rotation + right rotation
+        assert(tree.get(10).has_value());
+        assert(tree.get(20).has_value());
+        assert(tree.get(30).has_value());
+    }
+
+    // RL case
+    {
+        SortedTree<int, int> tree;
+        tree.put(10, 10);
+        tree.put(30, 30);
+        tree.put(20, 20); // triggers RL -> right rotation + left rotation
+        assert(tree.get(10).has_value());
+        assert(tree.get(20).has_value());
+        assert(tree.get(30).has_value());
+    }
 }
 
 void testDuplicateKeys() {
@@ -59,8 +92,8 @@ void testDuplicateKeys() {
 }
 
 int main() {
-    // testBasicPutGet();
-    testLeftRightHeavyInsert();
+    testBasicPutGet();
+    testAVLRotations();
     testDuplicateKeys();
 
     std::cout << "All assertions passed" << std::endl;

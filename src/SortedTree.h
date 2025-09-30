@@ -148,14 +148,26 @@ void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
         int balance = leftHeight - rightHeight;
 
         if(balance > 1) {
-            rightRotation(curr);
+            int children_balance = height(curr->left->left) - height(curr->left->right);
+            if(children_balance >= 0)
+                rightRotation(curr);
+            else {
+                leftRotation(curr->left);
+                rightRotation(curr);
+            }
         }
         else if (balance < -1) {
-            leftRotation(curr);
+            int children_balance = height(curr->right->left) - height(curr->right->right);
+            if(children_balance <= 0)
+                leftRotation(curr);
+            else {
+                rightRotation(curr->right);
+                leftRotation(curr);
+            }
         }
 
         curr->height = std::max(leftHeight, rightHeight) + 1;
-        curr = curr->parent; // move up the tree
+        curr = curr->parent;
     }
 }
 
