@@ -1,4 +1,0 @@
-C:/Users/Marko/CLionProjects/sorted-tree/cmake-build-debug/CMakeFiles/test_sorted.dir
-C:/Users/Marko/CLionProjects/sorted-tree/cmake-build-debug/CMakeFiles/test.dir
-C:/Users/Marko/CLionProjects/sorted-tree/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Marko/CLionProjects/sorted-tree/cmake-build-debug/CMakeFiles/rebuild_cache.dir
