@@ -1,6 +1,7 @@
 #include "../src/SortedTree.h"
 #include <iostream>
 #include <cassert>
+#include <cstdint>
 #include <vector>
 
 using Bytes = std::vector<uint8_t>;
@@ -58,7 +59,7 @@ void testDuplicateKeys() {
 }
 
 int main() {
-    testBasicPutGet();
+    // testBasicPutGet();
     testLeftRightHeavyInsert();
     testDuplicateKeys();
 

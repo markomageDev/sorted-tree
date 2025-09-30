@@ -1,6 +1,6 @@
 #pragma once
+#include <algorithm>
 #include <optional>
-#include <shared_mutex>
 
 template <typename Key, typename Value>
 class SortedTree {
@@ -16,7 +16,7 @@ public:
 
 private:
     struct Node {
-        Node(const Key& k, const Value& v, Node * parent = nullptr)
+        Node(const Key& k, const Value& v, Node* parent = nullptr)
             : key(k), value(v), left(nullptr), right(nullptr), parent(parent), height(1) {}
         ~Node()=default;
 
@@ -35,7 +35,12 @@ private:
     Node* root;
 
     void deleteTree(Node* node);
-    void insertRecursively(Node * curr, const Key& key, const Value& value);
+
+    static int height(Node* node) { return node ? node->height : 0; }
+
+    void rightRotation(Node*& y);
+
+    void leftRotation(Node*& y);
 };
 
 template <typename Key, typename Value>
@@ -52,30 +57,105 @@ void SortedTree<Key, Value>::deleteTree(Node* node) {
     delete node;
 }
 
-template <typename Key, typename Value>
-void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
-    if(!root) root = new Node(key, value);
-    else insertRecursively(root, key, value);
+template<typename Key, typename Value>
+void SortedTree<Key,Value>::rightRotation(Node*& y) {
+    Node* x = y->left;
+    Node* middle = x->right;
+
+    x->right = y;
+    y->left = middle;
+
+    x->parent = y->parent;
+    y->parent = x;
+    if (middle) middle->parent = y;
+
+    if (!x->parent)
+        root = x;
+    else if (x->parent->left == y) {
+        x->parent->left = x;
+    }
+    else {
+        x->parent->right = x;
+    }
+
+    y->height = std::max(height(y->left), height(y->right)) + 1;
+    x->height = std::max(height(x->left), height(x->right)) + 1;
+
+    y = x;
 }
 
 template<typename Key, typename Value>
-void SortedTree<Key, Value>::insertRecursively(Node * curr, const Key& key, const Value& value) {
-    if(curr->key == key) {
-        curr->value = value;
-        return;
-    }
+void SortedTree<Key,Value>::leftRotation(Node*& y) {
+    Node* x = y->right;
+    Node* middle = x->left;
 
-    if(key < curr->key) {
-        if(!curr->left) {
-            curr->left = new Node(key, value, curr);
-        }
-        else insertRecursively(curr->left, key, value);
+    x->left = y;
+    y->right = middle;
+
+    x->parent = y->parent;
+    y->parent = x;
+
+    if(middle) middle->parent = y;
+
+    if(!x->parent)
+        root = x;
+    else if(x->parent->left == y) {
+        x->parent->left = x;
     }
     else {
-        if(!curr->right) {
-            curr->right = new Node(key, value, curr);
+        x->parent->right = x;
+    }
+
+    y->height = std::max(height(y->left), height(y->right)) + 1;
+    x->height = std::max(height(x->left), height(x->right)) + 1;
+
+    y = x;
+}
+
+template <typename Key, typename Value>
+void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
+    if(!root) {
+        root = new Node(key, value);
+        return;
+    }
+    Node * curr = root;
+    while(curr) {
+        if(curr->key == key) {
+            curr->value = value;
+            return;
         }
-        else insertRecursively(curr->right, key, value);
+
+        if(key < curr->key) {
+            if(!curr->left) {
+                curr->left = new Node(key, value, curr);
+                break;
+            }
+            curr = curr->left;
+        }
+        else {
+            if(!curr->right) {
+                curr->right = new Node(key, value, curr);
+                break;
+            }
+            curr = curr->right;
+        }
+    }
+
+    while(curr){
+        int leftHeight = height(curr->left);
+        int rightHeight = height(curr->right);
+
+        int balance = leftHeight - rightHeight;
+
+        if(balance > 1) {
+            rightRotation(curr);
+        }
+        else if (balance < -1) {
+            leftRotation(curr);
+        }
+
+        curr->height = std::max(leftHeight, rightHeight) + 1;
+        curr = curr->parent; // move up the tree
     }
 }
 
