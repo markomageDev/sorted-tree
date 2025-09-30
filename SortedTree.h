@@ -1,6 +1,8 @@
 #pragma once
 #include <algorithm>
 #include <optional>
+#include <mutex>
+
 
 template <typename Key, typename Value>
 class SortedTree {
@@ -13,10 +15,6 @@ public:
 
     void put(const Key& key, const Value& value);
     std::optional<Value> get(const Key& key) const;
-
-    int treeHeight()const {
-        return height(root);
-    }
 private:
     struct Node {
         Node(const Key& k, const Value& v, Node* parent = nullptr)
@@ -36,6 +34,7 @@ private:
     };
 
     Node* root;
+    mutable std::mutex tree_mutex;
 
     void deleteTree(Node* node);
 
@@ -45,7 +44,7 @@ private:
 
     void leftRotation(Node*& y);
 
-    void updateHeight(Node*& n) { if (n) n->height = std::max(height(n->left), height(n->right)) + 1; }
+    void updateHeight(Node*& n) const { if (n) n->height = std::max(height(n->left), height(n->right)) + 1; }
 };
 
 template <typename Key, typename Value>
@@ -121,6 +120,8 @@ void SortedTree<Key,Value>::leftRotation(Node*& y) {
 
 template <typename Key, typename Value>
 void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
+    std::lock_guard lock(tree_mutex); // lock while modifying
+
     if(!root) {
         root = new Node(key, value);
         return;
@@ -177,6 +178,8 @@ void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
 
 template <typename Key, typename Value>
 std::optional<Value> SortedTree<Key, Value>::get(const Key& key) const {
+    std::lock_guard lock(tree_mutex); // lock while reading
+
     Node * curr = root;
     while(curr) {
         if(curr->key == key) return curr->value;

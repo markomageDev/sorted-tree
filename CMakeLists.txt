@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ---- Test executable ----
 add_executable(test_sorted
-        test/test_sorted.cpp
+        test_sorted.cpp
 )
 
 # Add include directory so test can see src/SortedTree.h

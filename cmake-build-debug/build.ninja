@@ -49,12 +49,12 @@ cmake_ninja_workdir = C$:/Users/Marko/CLionProjects/sorted-tree/cmake-build-debu
 
 build cmake_object_order_depends_target_test_sorted: phony || .
 
-build CMakeFiles/test_sorted.dir/test/test_sorted.cpp.obj: CXX_COMPILER__test_sorted_unscanned_Debug C$:/Users/Marko/CLionProjects/sorted-tree/test/test_sorted.cpp || cmake_object_order_depends_target_test_sorted
-  DEP_FILE = CMakeFiles\test_sorted.dir\test\test_sorted.cpp.obj.d
+build CMakeFiles/test_sorted.dir/test_sorted.cpp.obj: CXX_COMPILER__test_sorted_unscanned_Debug C$:/Users/Marko/CLionProjects/sorted-tree/test_sorted.cpp || cmake_object_order_depends_target_test_sorted
+  DEP_FILE = CMakeFiles\test_sorted.dir\test_sorted.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/Marko/CLionProjects/sorted-tree/src
   OBJECT_DIR = CMakeFiles\test_sorted.dir
-  OBJECT_FILE_DIR = CMakeFiles\test_sorted.dir\test
+  OBJECT_FILE_DIR = CMakeFiles\test_sorted.dir
 
 
 # =============================================================================
@@ -64,7 +64,7 @@ build CMakeFiles/test_sorted.dir/test/test_sorted.cpp.obj: CXX_COMPILER__test_so
 #############################################
 # Link the executable test_sorted.exe
 
-build test_sorted.exe: CXX_EXECUTABLE_LINKER__test_sorted_Debug CMakeFiles/test_sorted.dir/test/test_sorted.cpp.obj
+build test_sorted.exe: CXX_EXECUTABLE_LINKER__test_sorted_Debug CMakeFiles/test_sorted.dir/test_sorted.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\test_sorted.dir
