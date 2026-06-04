@@ -1,24 +1,28 @@
 #pragma once
-#include <algorithm>
 #include <optional>
 #include <mutex>
 
 
 template <typename Key, typename Value>
-class SortedTree {
+class AVLtree
+{
 public:
-    SortedTree();
-    ~SortedTree();
+    AVLtree();
+    ~AVLtree();
 
-    SortedTree(const SortedTree&) = delete;
-    SortedTree& operator=(const SortedTree&) = delete;
+    AVLtree(const AVLtree&) = delete;
+    AVLtree& operator=(const AVLtree&) = delete;
 
     void put(const Key& key, const Value& value);
+
     std::optional<Value> get(const Key& key) const;
+
 private:
-    struct Node {
+    struct Node
+    {
         Node(const Key& k, const Value& v, Node* parent = nullptr)
             : key(k), value(v), left(nullptr), right(nullptr), parent(parent), height(1) {}
+
         ~Node()=default;
 
         bool operator < (const Node& n) const {
@@ -34,9 +38,10 @@ private:
     };
 
     Node* root;
+
     mutable std::mutex tree_mutex;
 
-    void deleteTree(Node* node);
+    void deleteCascade(Node* node);
 
     static int height(Node* node) { return node ? node->height : 0; }
 
@@ -48,21 +53,21 @@ private:
 };
 
 template <typename Key, typename Value>
-SortedTree<Key, Value>::SortedTree() { root = nullptr; }
+AVLtree<Key, Value>::AVLtree() { root = nullptr; }
 
 template <typename Key, typename Value>
-SortedTree<Key, Value>::~SortedTree() { deleteTree(root); };
+AVLtree<Key, Value>::~AVLtree() { deleteCascade(root); };
 
 template<typename Key, typename Value>
-void SortedTree<Key, Value>::deleteTree(Node* node) {
+void AVLtree<Key, Value>::deleteCascade(Node* node) {
     if(!node) return;
-    deleteTree(node->left);
-    deleteTree(node->right);
+    deleteCascade(node->left);
+    deleteCascade(node->right);
     delete node;
 }
 
 template<typename Key, typename Value>
-void SortedTree<Key,Value>::rightRotation(Node*& y) {
+void AVLtree<Key,Value>::rightRotation(Node*& y) {
     Node* oldY = y;      // keep original y
     Node* x = y->left;
     Node* middle = x->right;
@@ -91,7 +96,7 @@ void SortedTree<Key,Value>::rightRotation(Node*& y) {
 }
 
 template<typename Key, typename Value>
-void SortedTree<Key,Value>::leftRotation(Node*& y) {
+void AVLtree<Key,Value>::leftRotation(Node*& y) {
     Node* oldY = y;
     Node* x = y->right;
     Node* middle = x->left;
@@ -119,7 +124,7 @@ void SortedTree<Key,Value>::leftRotation(Node*& y) {
 }
 
 template <typename Key, typename Value>
-void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
+void AVLtree<Key, Value>::put(const Key& key, const Value& value) {
     std::lock_guard lock(tree_mutex); // lock while modifying
 
     if(!root) {
@@ -177,7 +182,7 @@ void SortedTree<Key, Value>::put(const Key& key, const Value& value) {
 }
 
 template <typename Key, typename Value>
-std::optional<Value> SortedTree<Key, Value>::get(const Key& key) const {
+std::optional<Value> AVLtree<Key, Value>::get(const Key& key) const {
     std::lock_guard lock(tree_mutex); // lock while reading
 
     Node * curr = root;

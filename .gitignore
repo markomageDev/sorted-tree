@@ -1,0 +1,23 @@
+# CLion / JetBrains
+.idea/
+
+# CMake build output
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Executables / binaries
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.pdb
+
+# Logs
+*.log

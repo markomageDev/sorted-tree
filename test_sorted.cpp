@@ -2,7 +2,7 @@
 #include <vector>
 #include <thread>
 #include <optional>
-#include "SortedTree.h"
+#include "libraries/AVLtree.h"
 
 using Bytes = std::vector<uint8_t>;
 
@@ -16,7 +16,7 @@ void printBytes(const Bytes& b) {
 
 int main() {
     // SortedTree is a template: SortedTree<KeyType, ValueType>
-    SortedTree<Bytes, Bytes> tree;  // here we use it for byte arrays
+    AVLtree<Bytes, Bytes> tree;  // here we use it for byte arrays
 
     // Lambda to insert values
     auto insertValues = [&tree](int start) {
