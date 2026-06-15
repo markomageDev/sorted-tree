@@ -1,6 +1,7 @@
 #pragma once
 #include <optional>
 #include <mutex>
+#include <vector>
 
 
 template <typename Key, typename Value>
@@ -16,6 +17,18 @@ public:
     void put(const Key& key, const Value& value);
 
     std::optional<Value> get(const Key& key) const;
+
+    bool remove(const Key& key);
+
+    bool contains(const Key& key) const;
+
+    int size() const;
+
+    bool is_empty() const;
+
+    std::vector<std::pair<Key, Value>> in_order() const;
+
+    std::vector<std::pair<Key, Value>> range_query() const;
 
 private:
     struct Node
@@ -68,7 +81,7 @@ void AVLtree<Key, Value>::deleteCascade(Node* node) {
 
 template<typename Key, typename Value>
 void AVLtree<Key,Value>::rightRotation(Node*& y) {
-    Node* oldY = y;      // keep original y
+    Node* oldY = y;
     Node* x = y->left;
     Node* middle = x->right;
 
